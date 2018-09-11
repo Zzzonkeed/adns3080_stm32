@@ -3,9 +3,9 @@
 #define ADNS_NCS_SELECT GPIO_ResetBits(GPIOA, GPIO_Pin_4)
 GPIO_InitTypeDef GPIO_InitStructt;
 unsigned char frame[ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y];
-
+int pid;
 void adns3080_reset(void);
-void adns_spi_config(void) {
+int mousecam_init(void) {
 	 RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
     SPI_InitTypeDef   SPI_InitStructure;
@@ -18,8 +18,6 @@ void adns_spi_config(void) {
     GPIO_Init(GPIOA, &GPIO_InitStructt);
   /* SPI_MASTER configuration ------------------------------------------------*/
  
-
-	
 //  GPIO_InitStructt.GPIO_Pin = GPIO_Pin_4;
 //  GPIO_InitStructt.GPIO_Mode = GPIO_Mode_OUT;
 //  GPIO_InitStructt.GPIO_OType = GPIO_OType_PP;
@@ -41,20 +39,14 @@ void adns_spi_config(void) {
   SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
   SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
   SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 //  SPI_InitStructure.SPI_CRCPolynomial = 7;
   SPI_Init(SPI1, &SPI_InitStructure);
     /* Enable SPI_MASTER */
   SPI_Cmd(SPI1, ENABLE);
 	// deselect NCS pin. = HIGH
-	
-	
-
-}
-int pid;
-int8_t mousecam_init(void) {
-	ADNS_NCS_DESELECT;
+		ADNS_NCS_DESELECT;
 	adns3080_reset();
 	pid = mousecam_read_reg(ADNS3080_PRODUCT_ID);
   if(pid != ADNS3080_PRODUCT_ID_VAL)
@@ -63,6 +55,17 @@ int8_t mousecam_init(void) {
   mousecam_write_reg(ADNS3080_CONFIGURATION_BITS, 0x19);
   return 0;
 }
+
+//int8_t mousecam_init(void) {
+//	ADNS_NCS_DESELECT;
+//	adns3080_reset();
+//	pid = mousecam_read_reg(ADNS3080_PRODUCT_ID);
+//  if(pid != ADNS3080_PRODUCT_ID_VAL)
+//    return -1;
+//  // turn on sensitive mode
+//  mousecam_write_reg(ADNS3080_CONFIGURATION_BITS, 0x19);
+//  return 0;
+//}
 //	int pid = mousecam_read_reg(ADNS3080_PRODUCT_ID);
 //  if(pid != ADNS3080_PRODUCT_ID_VAL)
 //    return -1;
@@ -75,7 +78,7 @@ void adns3080_reset(void)
 {
  // digitalWrite(PIN_MOUSECAM_RESET,HIGH);
 	GPIO_SetBits(GPIOA, GPIO_Pin_3);
-  delay_ms(100); // reset pulse >10us
+  delay_ms(1); // reset pulse >10us
  // digitalWrite(PIN_MOUSECAM_RESET,LOW);
 	GPIO_ResetBits(GPIOA, GPIO_Pin_3);
   delay_ms(35); // 35ms from reset to functional
@@ -101,13 +104,14 @@ void adns3080_reset(void)
 //}
 int mousecam_read_reg(int Address)
 {
-  uint8_t val;
+  int val;
 //	MF522_CS_ENABLE;
 	ADNS_NCS_SELECT;
-	delay_us(5);
+	delay_us(2);
 	//address format:1XXXXXX0
 	//SPI_transfer(((Address<<1)&0x7E) | 0x80);
 	SPI_transfer(Address);
+	delay_us(75);
 	val = SPI_transfer(0xff);
 	ADNS_NCS_DESELECT;
 	//MF522_CS_DISABLE;
@@ -142,7 +146,7 @@ void mousecam_read_motion(struct MD *p)
  // digitalWrite(PIN_MOUSECAM_CS, LOW);
 	ADNS_NCS_SELECT;
   SPI_transfer(ADNS3080_MOTION_BURST);
-  delay_ms(75);
+  delay_us(75);
   p->motion =  SPI_transfer(0xff);
   p->dx =  SPI_transfer(0xff);
   p->dy =  SPI_transfer(0xff);
@@ -152,7 +156,7 @@ void mousecam_read_motion(struct MD *p)
   p->max_pix =  SPI_transfer(0xff);
 	ADNS_NCS_DESELECT;
  // digitalWrite(PIN_MOUSECAM_CS,HIGH); 
-  delay_ms(5);
+  delay_us(5);
 }
 
 // pdata must point to an array of size ADNS3080_PIXELS_X x ADNS3080_PIXELS_Y

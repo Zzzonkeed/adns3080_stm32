@@ -1,5 +1,5 @@
 Dependencies for Project 'project', Target 'STM32F407': (DO NOT MODIFY !)
-F (..\user\main.c)(0x5B979BFE)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\MDK-ARM -I ..\STM32F4xx_StdPeriph_Driver\inc -I ..\External_Modules -I ..\user-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-IC:\Keil_v5\ARM\INC\ST\STM32F4xx-D__UVISION_VERSION="524" -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx -DHSE_VALUE="8000000" -DSTM32F40_41xxx-o ..\build\main.o --omf_browse ..\build\main.crf --depend ..\build\main.d)
+F (..\user\main.c)(0x5B97BB87)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\MDK-ARM -I ..\STM32F4xx_StdPeriph_Driver\inc -I ..\External_Modules -I ..\user-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-IC:\Keil_v5\ARM\INC\ST\STM32F4xx-D__UVISION_VERSION="524" -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx -DHSE_VALUE="8000000" -DSTM32F40_41xxx-o ..\build\main.o --omf_browse ..\build\main.crf --depend ..\build\main.d)
 I (..\user\stm32f4xx.h)(0x527C27FA)
 I (C:\Keil_v5\ARM\CMSIS\Include\core_cm4.h)(0x5AD33CF0)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x588B9154)
@@ -36,7 +36,7 @@ I (..\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h)(0x51087D4A)
 I (..\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h)(0x51087D4A)
 I (..\user\stm32f4xx_it.h)(0x5AD893FE)
 I (..\External_Modules\my_delay.h)(0x5B97857F)
-I (..\External_Modules\adns3080.h)(0x5B9785B4)
+I (..\External_Modules\adns3080.h)(0x5B979EDD)
 F (..\user\stm32f4xx_it.c)(0x5AD89406)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\MDK-ARM -I ..\STM32F4xx_StdPeriph_Driver\inc -I ..\External_Modules -I ..\user-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-IC:\Keil_v5\ARM\INC\ST\STM32F4xx-D__UVISION_VERSION="524" -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx -DHSE_VALUE="8000000" -DSTM32F40_41xxx-o ..\build\stm32f4xx_it.o --omf_browse ..\build\stm32f4xx_it.crf --depend ..\build\stm32f4xx_it.d)
 I (..\user\stm32f4xx_it.h)(0x5AD893FE)
 I (..\user\stm32f4xx.h)(0x527C27FA)
@@ -148,8 +148,8 @@ I (..\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_can.h)(0x51087D4A)
 I (..\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h)(0x51087D4A)
 I (..\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h)(0x51087D4A)
 I (..\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h)(0x51087D4A)
-F (..\External_Modules\adns3080.c)(0x5B97898C)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\MDK-ARM -I ..\STM32F4xx_StdPeriph_Driver\inc -I ..\External_Modules -I ..\user-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-IC:\Keil_v5\ARM\INC\ST\STM32F4xx-D__UVISION_VERSION="524" -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx -DHSE_VALUE="8000000" -DSTM32F40_41xxx-o ..\build\adns3080.o --omf_browse ..\build\adns3080.crf --depend ..\build\adns3080.d)
-I (..\External_Modules\adns3080.h)(0x5B9785B4)
+F (..\External_Modules\adns3080.c)(0x5B97BB45)(--c99 -c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I ..\MDK-ARM -I ..\STM32F4xx_StdPeriph_Driver\inc -I ..\External_Modules -I ..\user-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-IC:\Keil_v5\ARM\INC\ST\STM32F4xx-D__UVISION_VERSION="524" -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx -DHSE_VALUE="8000000" -DSTM32F40_41xxx-o ..\build\adns3080.o --omf_browse ..\build\adns3080.crf --depend ..\build\adns3080.d)
+I (..\External_Modules\adns3080.h)(0x5B979EDD)
 I (..\user\stm32f4xx.h)(0x527C27FA)
 I (C:\Keil_v5\ARM\CMSIS\Include\core_cm4.h)(0x5AD33CF0)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x588B9154)

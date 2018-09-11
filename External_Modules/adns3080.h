@@ -53,9 +53,9 @@ struct MD
 #define ADNS3080_SROM_LOAD             0x60
 
 #define ADNS3080_PRODUCT_ID_VAL        0x17
-void adns_spi_config(void);
+//void adns_spi_config(void);
 unsigned char SPI_transfer(unsigned char data);
 int mousecam_read_reg(int Address);
 void mousecam_write_reg(int reg, int val);
-int8_t mousecam_init(void);
+int mousecam_init(void);
 void mousecam_read_motion(struct MD *p);
