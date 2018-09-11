@@ -1,0 +1,203 @@
+#include "adns3080.h"
+#define ADNS_NCS_DESELECT GPIO_SetBits(GPIOA, GPIO_Pin_4)
+#define ADNS_NCS_SELECT GPIO_ResetBits(GPIOA, GPIO_Pin_4)
+GPIO_InitTypeDef GPIO_InitStructt;
+unsigned char frame[ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y];
+
+void adns3080_reset(void);
+void adns_spi_config(void) {
+	 RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+    SPI_InitTypeDef   SPI_InitStructure;
+	// PA3 PA4 -> RST, NCS
+	  GPIO_InitStructt.GPIO_Pin =GPIO_Pin_3 | GPIO_Pin_4;
+    GPIO_InitStructt.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructt.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructt.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructt.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &GPIO_InitStructt);
+  /* SPI_MASTER configuration ------------------------------------------------*/
+ 
+
+	
+//  GPIO_InitStructt.GPIO_Pin = GPIO_Pin_4;
+//  GPIO_InitStructt.GPIO_Mode = GPIO_Mode_OUT;
+//  GPIO_InitStructt.GPIO_OType = GPIO_OType_PP;
+//  GPIO_InitStructt.GPIO_Speed = GPIO_Speed_100MHz;
+//  GPIO_InitStructt.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//  GPIO_Init(GPIOA, &GPIO_InitStructt);
+	
+  GPIO_InitStructt.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+  GPIO_InitStructt.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_Init(GPIOA, &GPIO_InitStructt);
+  
+  GPIO_PinAFConfig(GPIOA,GPIO_PinSource5,GPIO_AF_SPI1); // SCK
+  GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_SPI1); // MISO
+  GPIO_PinAFConfig(GPIOA,GPIO_PinSource7,GPIO_AF_SPI1); // MOSI
+  
+  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+  SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
+  SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+//  SPI_InitStructure.SPI_CRCPolynomial = 7;
+  SPI_Init(SPI1, &SPI_InitStructure);
+    /* Enable SPI_MASTER */
+  SPI_Cmd(SPI1, ENABLE);
+	// deselect NCS pin. = HIGH
+	
+	
+
+}
+int pid;
+int8_t mousecam_init(void) {
+	ADNS_NCS_DESELECT;
+	adns3080_reset();
+	pid = mousecam_read_reg(ADNS3080_PRODUCT_ID);
+  if(pid != ADNS3080_PRODUCT_ID_VAL)
+    return -1;
+  // turn on sensitive mode
+  mousecam_write_reg(ADNS3080_CONFIGURATION_BITS, 0x19);
+  return 0;
+}
+//	int pid = mousecam_read_reg(ADNS3080_PRODUCT_ID);
+//  if(pid != ADNS3080_PRODUCT_ID_VAL)
+//    return -1;
+
+//  // turn on sensitive mode
+//  mousecam_write_reg(ADNS3080_CONFIGURATION_BITS, 0x19);
+
+//  return 0;
+void adns3080_reset(void)
+{
+ // digitalWrite(PIN_MOUSECAM_RESET,HIGH);
+	GPIO_SetBits(GPIOA, GPIO_Pin_3);
+  delay_ms(100); // reset pulse >10us
+ // digitalWrite(PIN_MOUSECAM_RESET,LOW);
+	GPIO_ResetBits(GPIOA, GPIO_Pin_3);
+  delay_ms(35); // 35ms from reset to functional
+}
+
+//int8_t mousecam_init()
+//{
+////  pinMode(PIN_MOUSECAM_RESET,OUTPUT);
+////  pinMode(PIN_MOUSECAM_CS,OUTPUT);
+//  
+// // digitalWrite(PIN_MOUSECAM_CS,HIGH);
+//  
+//  adns3080_reset();
+//  
+//  int pid = mousecam_read_reg(ADNS3080_PRODUCT_ID);
+//  if(pid != ADNS3080_PRODUCT_ID_VAL)
+//    return -1;
+
+//  // turn on sensitive mode
+//  mousecam_write_reg(ADNS3080_CONFIGURATION_BITS, 0x19);
+
+//  return 0;
+//}
+int mousecam_read_reg(int Address)
+{
+  uint8_t val;
+//	MF522_CS_ENABLE;
+	ADNS_NCS_SELECT;
+	delay_us(5);
+	//address format:1XXXXXX0
+	//SPI_transfer(((Address<<1)&0x7E) | 0x80);
+	SPI_transfer(Address);
+	val = SPI_transfer(0xff);
+	ADNS_NCS_DESELECT;
+	//MF522_CS_DISABLE;
+	delay_us(1);
+	return val;
+}
+void mousecam_write_reg(int reg, int val)
+{  
+//	MF522_CS_ENABLE;
+	ADNS_NCS_SELECT;
+	delay_us(5);
+	//address format:0XXXXXX0
+	SPI_transfer(reg| 0x80);
+	SPI_transfer(val);
+//	MF522_CS_DISABLE;
+	ADNS_NCS_DESELECT;
+	delay_us(5);
+}
+unsigned char SPI_transfer(unsigned char data){
+
+	uint32_t val;
+	//This function is just exactly the same as void 'SPI_I2S_SendData(SPI_TypeDef* SPIx, uint16_t Data)'
+	SPI1->DR = data; // write data to be transmitted to the SPI data register
+	while( !(SPI1->SR & SPI_I2S_FLAG_TXE) ); // wait until transmit complete
+	while( !(SPI1->SR & SPI_I2S_FLAG_RXNE) ); // wait until receive complete
+	while( SPI1->SR & SPI_I2S_FLAG_BSY ); // wait until SPI is not busy anymore
+	return SPI1->DR; // return received data from SPI data register
+}
+
+void mousecam_read_motion(struct MD *p)
+{
+ // digitalWrite(PIN_MOUSECAM_CS, LOW);
+	ADNS_NCS_SELECT;
+  SPI_transfer(ADNS3080_MOTION_BURST);
+  delay_ms(75);
+  p->motion =  SPI_transfer(0xff);
+  p->dx =  SPI_transfer(0xff);
+  p->dy =  SPI_transfer(0xff);
+  p->squal =  SPI_transfer(0xff);
+  p->shutter =  SPI_transfer(0xff)<<8;
+  p->shutter |=  SPI_transfer(0xff);
+  p->max_pix =  SPI_transfer(0xff);
+	ADNS_NCS_DESELECT;
+ // digitalWrite(PIN_MOUSECAM_CS,HIGH); 
+  delay_ms(5);
+}
+
+// pdata must point to an array of size ADNS3080_PIXELS_X x ADNS3080_PIXELS_Y
+// you must call mousecam_reset() after this if you want to go back to normal operation
+int mousecam_frame_capture(unsigned char *pdata)
+{
+ // mousecam_write_reg(ADNS3080_FRAME_CAPTURE,0x83);
+  ADNS_NCS_SELECT;
+//  digitalWrite(PIN_MOUSECAM_CS, LOW);
+  
+  SPI_transfer(ADNS3080_PIXEL_BURST);
+  delay_ms(50);
+  
+  int pix;
+  unsigned char started = 0;
+  int count;
+  int timeout = 0;
+  int ret = 0;
+  for(count = 0; count < ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y; )
+  {
+    pix = SPI_transfer(0xff);
+    delay_ms(10);
+    if(started==0)
+    {
+      if(pix&0x40)
+        started = 1;
+      else
+      {
+        timeout++;
+        if(timeout==100)
+        {
+          ret = -1;
+          break;
+        }
+      }
+    }
+    if(started==1)
+    {
+      pdata[count++] = (pix & 0x3f)<<2; // scale to normal grayscale byte range
+    }
+  }
+
+ // digitalWrite(PIN_MOUSECAM_CS,HIGH); 
+	ADNS_NCS_DESELECT;
+  delay_ms(14);
+  
+  return ret;
+}
