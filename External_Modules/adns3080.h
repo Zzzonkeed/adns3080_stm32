@@ -57,5 +57,8 @@ struct MD
 unsigned char SPI_transfer(unsigned char data);
 int mousecam_read_reg(int Address);
 void mousecam_write_reg(int reg, int val);
-int mousecam_init(void);
+//int mousecam_init(void);
+int mousecam_frame_capture(unsigned char *pdata);
 void mousecam_read_motion(struct MD *p);
+int8_t mousecam_init(void);
+void adns3080_spi_config(void);

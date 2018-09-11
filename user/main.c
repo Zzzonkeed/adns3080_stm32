@@ -45,10 +45,9 @@ int main(void)
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-	 // adns_spi_config();
+    adns3080_spi_config();
 	  delay_ms(500);
-init_status =	mousecam_init();
+    init_status =	mousecam_init();
 	delay_ms(500);
     while (1) {
 	//	printf("Hello worlddd %d \r\n", count);
@@ -62,7 +61,7 @@ init_status =	mousecam_init();
 			  val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
 ////  
   mousecam_read_motion(&md);
-			delay_ms(150);
+			delay_ms(30);
 //  val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
 //  
 //  mousecam_read_motion(&md);
