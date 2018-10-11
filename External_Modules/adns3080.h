@@ -16,6 +16,7 @@ struct MD
  unsigned char squal;
  unsigned int shutter;
  unsigned char max_pix;
+ int x,y;
 };
 #define ADNS3080_PIXELS_X                 30
 #define ADNS3080_PIXELS_Y                 30

@@ -25,10 +25,10 @@ NVIC_InitTypeDef  NVIC_InitStruct;
 GPIO_InitTypeDef GPIO_InitStruct;
 USART_InitTypeDef USART_InitStruct;
 GPIO_InitTypeDef  GPIO_InitStruct;
-uint32_t count;
-struct MD md;
-int val;
-int init_status=5;
+//uint32_t count;
+struct MD adns_md;
+int adns_val;
+int adns_status=5, adns_init_cnt = 0;
 int main(void)
 {
  //   usart_init(19200);
@@ -47,8 +47,15 @@ int main(void)
     GPIO_Init(GPIOD, &GPIO_InitStruct);
     adns3080_spi_config();
 	  delay_ms(500);
-    init_status =	mousecam_init();
-	delay_ms(500);
+	  while (adns_status != 0) {
+    adns_status =	mousecam_init();
+			adns_init_cnt++;
+			if (adns_init_cnt==10) {
+				NVIC_SystemReset();
+			}
+			delay_ms(200);
+		}
+	 // delay_ms(500);
     while (1) {
 	//	printf("Hello worlddd %d \r\n", count);
 //		count+=5;
@@ -58,11 +65,15 @@ int main(void)
 //	delay_ms(100);
 //	GPIO_ResetBits(GPIOD,GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);
 			
-			  val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
+			  adns_val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
 ////  
-  mousecam_read_motion(&md);
-			delay_ms(30);
-//  val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
+  mousecam_read_motion(&adns_md);
+			delay_ms(4);
+			adns_md.x+=adns_md.dx;
+			adns_md.y+=adns_md.dy;
+			
+			
+//  adns_val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
 //  
 //  mousecam_read_motion(&md);
   // md.squal is ******** squirrel number = surface quality
@@ -70,7 +81,7 @@ int main(void)
 //    Serial.print('*');
 //  Serial.print(' ');
   // avarage brightness value
-//  Serial.print((val*100)/351);
+//  Serial.print((adns_val*100)/351);
 ////  Serial.print(' ');
 //  Serial.print(md.shutter); Serial.print(" (");
 //  // dx dy are motion vector
