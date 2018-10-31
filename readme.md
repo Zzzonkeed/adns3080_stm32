@@ -1,5 +1,5 @@
 # Brief
-Library for communicate ADNS3080 and stm32. Read basic values from ADNS380 optical flow sensor.
+Library for communicating ADNS3080 and stm32. Read basic values from ADNS380 optical flow sensor.
 Tested on STM32F407VG board.
 # Pinout.
 The pinout between STM32 and ADNS3080 is as follow:
